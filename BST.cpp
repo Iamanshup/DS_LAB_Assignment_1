@@ -178,13 +178,16 @@ Node *BST::search(int x)
 void BST::deleteKey(int x)
 {
 	Node *cur = root, *par = NULL;
-	bool found = false;
+
+	if (!search(x))
+	{
+		throw "Key to be deleted is not present in the BST!";
+	}
 
 	while (cur)
 	{
 		if (x == cur->val)
 		{
-			found = true;
 			break;
 		}
 		else if (x < cur->val)
@@ -194,14 +197,10 @@ void BST::deleteKey(int x)
 		}
 		else
 		{
+			cur->sizeOfRightSubtree -= 1;
 			par = cur;
 			cur = cur->right;
 		}
-	}
-
-	if (!found)
-	{
-		throw "Key to be deleted is not present in the BST!";
 	}
 
 	if (cur->lthread && cur->rthread) // cur is leaf node
@@ -221,7 +220,7 @@ void BST::deleteKey(int x)
 void BST::deleteLeaf(Node *node, Node *par)
 {
 	// If Node to be deleted is root
-	if (par == NULL)
+	if (!par)
 		root = NULL;
 
 	// If Node to be deleted is left
@@ -233,7 +232,6 @@ void BST::deleteLeaf(Node *node, Node *par)
 	}
 	else
 	{
-		par->sizeOfRightSubtree -= 1;
 		par->rthread = true;
 		par->right = node->right;
 	}
@@ -245,8 +243,10 @@ void BST::deleteLeaf(Node *node, Node *par)
 void BST::deleteNodeWithTwoChildren(Node *node, Node *par)
 {
 	// Find inorder successor and its parent.
-	struct Node *parsucc = node;
-	struct Node *succ = node->right;
+	Node *parsucc = node;
+	Node *succ = node->right;
+
+	node->sizeOfRightSubtree -= 1;
 
 	// Find leftmost child of successor
 	while (succ->left != NULL)
@@ -265,7 +265,7 @@ void BST::deleteNodeWithTwoChildren(Node *node, Node *par)
 
 void BST::deleteNodeWithOneChild(Node *node, Node *par)
 {
-	struct Node *child;
+	Node *child;
 
 	// Initialize child Node to be deleted has
 	// left child.
@@ -284,10 +284,7 @@ void BST::deleteNodeWithOneChild(Node *node, Node *par)
 	else if (node == par->left)
 		par->left = child;
 	else
-	{
-		par->sizeOfRightSubtree -= 1;
 		par->right = child;
-	}
 
 	// Find successor and predecessor
 	Node *s = successor(node);

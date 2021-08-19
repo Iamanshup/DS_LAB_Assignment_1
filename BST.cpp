@@ -375,7 +375,7 @@ void BST::allElementsBetweenHelper(const Node *node, int k1, int k2, LinkedList 
         If node->data is greater than k1,
         then only we can get o/p keys
         in left subtree */
-	if (k1 < node->val)
+	if (!node->lthread && k1 < node->val)
 		allElementsBetweenHelper(node->left, k1, k2, list);
 
 	/* if node's val lies in range,
@@ -386,7 +386,7 @@ void BST::allElementsBetweenHelper(const Node *node, int k1, int k2, LinkedList 
 	/* If node->val is smaller than k2,
         then only we can get o/p keys
         in right subtree */
-	if (k2 > node->val)
+	if (!node->rthread && k2 > node->val)
 		allElementsBetweenHelper(node->right, k1, k2, list);
 }
 
@@ -428,6 +428,6 @@ int main()
 		bst->insert(num);
 	}
 
-	LinkedList *list = bst->allElementsBetween(5, 100);
+	LinkedList *list = bst->allElementsBetween(1, 100);
 	list->printList();
 }

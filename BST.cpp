@@ -425,11 +425,12 @@ void BST::printTree()
 {
 	ofstream fout;
 
-	fout.open("output.dot");
+	fout.open("BST.dot");
 	fout << "digraph g {\n";
 	printTreeHelper(root, fout);
 	fout << "}";
 	fout.close();
+	system(" dot -Tpng BST.dot -o BST.png");
 }
 
 void BST::printTreeHelper(const Node *node, ofstream &fout)
@@ -437,35 +438,42 @@ void BST::printTreeHelper(const Node *node, ofstream &fout)
 	if (!node)
 		return;
 
+	if (node == root)
+	{
+		fout << "label = \" rooted at " << node->val << " \";\n";
+		fout << node->val << " [root = true]\n";
+	}
 	if (!node->lthread)
 	{
-		fout << node->val << "->" << node->left->val << "\n";
+		fout << node->val << " -> " << node->left->val << "\n";
 		printTreeHelper(node->left, fout);
+	}
+	else
+	{
+		if (node->left)
+			fout << node->val << " -> " << node->left->val << "[style = dotted];\n";
 	}
 
 	if (!node->rthread)
 	{
-		fout << node->val << "->" << node->right->val << "\n";
+		fout << node->val << " -> " << node->right->val << "\n";
 		printTreeHelper(node->right, fout);
+	}
+	else
+	{
+		if (node->right)
+			fout << node->val << " -> " << node->right->val << "[style = dotted];\n";
 	}
 }
 
 int main()
 {
 	BST *bst = new BST();
-	int arr[] = {3, 4, 1, 2, 9, -10};
+	int arr[] = {50, 30, 100, 5, 40, 90, 105, 0, 10, 35, 45, 85, 95};
 
 	for (int num : arr)
 	{
 		bst->insert(num);
-	}
-
-	bst->insert(1);
-	bst->insert(2);
-
-	for (int i = 1; i <= 6; ++i)
-	{
-		bst->kthElement(i);
 	}
 
 	bst->printTree();

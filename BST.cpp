@@ -74,8 +74,12 @@ public:
 		if (!node)
 			return;
 		bst.insert(node->val);
-		copyConstructorHelper(node->left, bst);
-		copyConstructorHelper(node->right, bst);
+
+		if (!node->lthread)
+			copyConstructorHelper(node->left, bst);
+
+		if (!node->rthread)
+			copyConstructorHelper(node->right, bst);
 	}
 
 	void insert(int x);
@@ -88,6 +92,8 @@ public:
 	void kthElement(int k);
 	void printTree();
 	void printTreeHelper(const Node *node, ofstream &fout);
+	void split(int k);
+	Node *splitHelper(Node *node, int k);
 };
 
 void BST::insert(int x)
@@ -471,6 +477,26 @@ void BST::printTreeHelper(const Node *node, ofstream &fout)
 			fout << node->val << " -> " << node->right->val << "[style = dotted];\n";
 	}
 }
+
+// void BST::split(int k)
+// {
+// 	Node *arr = splitHelper(root, k);
+// }
+
+// Node *BST::splitHelper(Node *node, int k)
+// {
+// 	Node arr[2] = {NULL, NULL};
+
+// 	if (!node)
+// 		return arr;
+
+// 	int x = node->val > k ? 1 : 0;
+// 	int y = node->val > k ? 1 : 0;
+// 	Node *next = node->val > k ? node->left : node->right;
+
+// 	arr[x] = *node;
+// 	Node *arr = splitHelper(next, k);
+// }
 
 int main()
 {

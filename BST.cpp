@@ -252,7 +252,7 @@ void BST::deleteNodeWithTwoChildren(Node *node, Node *par)
 	node->sizeOfRightSubtree -= 1;
 
 	// Find leftmost child of successor
-	while (succ->left != NULL)
+	while (!succ->lthread && succ->left != NULL)
 	{
 		parsucc = succ;
 		succ = succ->left;
@@ -314,7 +314,7 @@ Node *BST::successor(Node *node)
 		return cur->right;
 
 	cur = cur->right;
-	while (cur->left)
+	while (!cur->lthread && cur->left)
 		cur = cur->left;
 	return cur;
 }
@@ -326,7 +326,7 @@ Node *BST::predecessor(Node *node)
 		return cur->left;
 
 	cur = cur->left;
-	while (cur->right)
+	while (!cur->rthread && cur->right)
 		cur = cur->right;
 	return cur;
 }
@@ -430,7 +430,7 @@ void BST::printTree()
 	printTreeHelper(root, fout);
 	fout << "}";
 	fout.close();
-	system(" dot -Tpng BST.dot -o BST.png");
+	system("dot -Tpng BST.dot -o BST.png");
 }
 
 void BST::printTreeHelper(const Node *node, ofstream &fout)
@@ -476,7 +476,15 @@ int main()
 		bst->insert(num);
 	}
 
+	// bst->deleteKey(0);
+	bst->deleteKey(90);
+
 	bst->printTree();
+
+	// for (int i = 0; i < 13; ++i)
+	// {
+	// 	bst->kthElement(i + 1);
+	// }
 
 	// LinkedList *list = bst->allElementsBetween(1, 100);
 	// list->printList();

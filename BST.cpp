@@ -314,6 +314,9 @@ Node *BST::successor(Node *node)
 		return cur->right;
 
 	cur = cur->right;
+	if (!cur)
+		return cur;
+
 	while (!cur->lthread && cur->left)
 		cur = cur->left;
 	return cur;
@@ -326,6 +329,9 @@ Node *BST::predecessor(Node *node)
 		return cur->left;
 
 	cur = cur->left;
+	if (!cur)
+		return cur;
+
 	while (!cur->rthread && cur->right)
 		cur = cur->right;
 	return cur;
@@ -477,7 +483,8 @@ int main()
 	}
 
 	// bst->deleteKey(0);
-	bst->deleteKey(90);
+	// bst->deleteKey(90);
+	bst->insert(1);
 
 	bst->printTree();
 

@@ -21,6 +21,17 @@ public:
 	}
 };
 
+class DoubleTrees
+{
+public:
+	Node *left, *right;
+	DoubleTrees()
+	{
+		left = NULL;
+		right = NULL;
+	}
+};
+
 class BST
 {
 public:
@@ -93,7 +104,7 @@ public:
 	void printTree();
 	void printTreeHelper(const Node *node, ofstream &fout);
 	void split(int k);
-	Node *splitHelper(Node *node, int k);
+	DoubleTrees *splitHelper(Node *node, int k);
 };
 
 void BST::insert(int x)
@@ -478,25 +489,91 @@ void BST::printTreeHelper(const Node *node, ofstream &fout)
 	}
 }
 
-// void BST::split(int k)
-// {
-// 	Node *arr = splitHelper(root, k);
-// }
+void BST::split(int k)
+{
+	DoubleTrees *dt = splitHelper(root, k);
+	// root = dt->left;
 
-// Node *BST::splitHelper(Node *node, int k)
-// {
-// 	Node arr[2] = {NULL, NULL};
+	Node *cur = dt->left;
 
-// 	if (!node)
-// 		return arr;
+	cout << "InOrder of T1: ";
+	if (cur)
+	{
+		while (cur->left)
+			cur = cur->left;
 
-// 	int x = node->val > k ? 1 : 0;
-// 	int y = node->val > k ? 1 : 0;
-// 	Node *next = node->val > k ? node->left : node->right;
+		while (cur)
+		{
+			cout << cur->val << " ";
+			cur = successor(cur);
+		}
+	}
+	cout << endl;
 
-// 	arr[x] = *node;
-// 	Node *arr = splitHelper(next, k);
-// }
+	cur = dt->right;
+
+	cout << "InOrder of T2: ";
+	if (cur)
+	{
+		while (cur->left)
+			cur = cur->left;
+
+		while (cur)
+		{
+			cout << cur->val << " ";
+			cur = successor(cur);
+		}
+	}
+	cout << endl;
+	// if (dt->left)
+	// 	cout << dt->left->val << "L\n";
+
+	// if (dt->right)
+	// 	cout << dt->right->val << "R\n";
+}
+
+DoubleTrees *BST::splitHelper(Node *node, int k)
+{
+	DoubleTrees *dt = new DoubleTrees();
+	;
+
+	if (!node)
+		return dt;
+
+	if (node->val <= k)
+	{
+		dt->left = node;
+		if (!node->rthread)
+		{
+			DoubleTrees *dt1 = splitHelper(node->right, k);
+			dt->left->right = dt1->left;
+			dt->right = dt1->right;
+		}
+		else
+		{
+			DoubleTrees *dt1 = splitHelper(NULL, k);
+			dt->left->right = dt1->left;
+			dt->right = dt1->right;
+		}
+	}
+	else
+	{
+		dt->right = node;
+		if (!node->lthread)
+		{
+			DoubleTrees *dt1 = splitHelper(node->left, k);
+			dt->right->left = dt1->right;
+			dt->left = dt1->left;
+		}
+		else
+		{
+			DoubleTrees *dt1 = splitHelper(NULL, k);
+			dt->right->left = dt1->right;
+			dt->left = dt1->left;
+		}
+	}
+	return dt;
+}
 
 int main()
 {
@@ -508,11 +585,11 @@ int main()
 		bst->insert(num);
 	}
 
-	// bst->deleteKey(0);
-	// bst->deleteKey(90);
-	bst->insert(1);
-
 	bst->printTree();
+
+	bst->split(11);
+
+	// bst->printTree();
 
 	// for (int i = 0; i < 13; ++i)
 	// {

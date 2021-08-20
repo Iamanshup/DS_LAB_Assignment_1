@@ -1,5 +1,6 @@
 #include <iostream>
 #include <limits.h>
+#include <fstream>
 #include "LinkedList.h"
 using namespace std;
 
@@ -85,6 +86,8 @@ public:
 	LinkedList *reverseInorder();
 	LinkedList *allElementsBetween(int k1, int k2);
 	void kthElement(int k);
+	void printTree();
+	void printTreeHelper(const Node *node, ofstream &fout);
 };
 
 void BST::insert(int x)
@@ -418,6 +421,35 @@ int BST::kthElementHelper(Node *node, int k)
 	return INT_MIN;
 }
 
+void BST::printTree()
+{
+	ofstream fout;
+
+	fout.open("output.dot");
+	fout << "digraph g {\n";
+	printTreeHelper(root, fout);
+	fout << "}";
+	fout.close();
+}
+
+void BST::printTreeHelper(const Node *node, ofstream &fout)
+{
+	if (!node)
+		return;
+
+	if (!node->lthread)
+	{
+		fout << node->val << "->" << node->left->val << "\n";
+		printTreeHelper(node->left, fout);
+	}
+
+	if (!node->rthread)
+	{
+		fout << node->val << "->" << node->right->val << "\n";
+		printTreeHelper(node->right, fout);
+	}
+}
+
 int main()
 {
 	BST *bst = new BST();
@@ -428,6 +460,16 @@ int main()
 		bst->insert(num);
 	}
 
-	LinkedList *list = bst->allElementsBetween(1, 100);
-	list->printList();
+	bst->insert(1);
+	bst->insert(2);
+
+	for (int i = 1; i <= 6; ++i)
+	{
+		bst->kthElement(i);
+	}
+
+	bst->printTree();
+
+	// LinkedList *list = bst->allElementsBetween(1, 100);
+	// list->printList();
 }

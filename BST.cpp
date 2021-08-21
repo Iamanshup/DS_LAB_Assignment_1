@@ -1,6 +1,7 @@
 #include <iostream>
 #include <limits.h>
 #include <fstream>
+#include <cstdlib>
 #include "LinkedList.h"
 using namespace std;
 
@@ -599,18 +600,6 @@ DoubleTrees *BST::splitHelper(Node *node, int k)
 int main()
 {
 	BST *bst = new BST();
-	int arr[] = {50, 30, 100, 5, 40, 90, 105, 0, 10, 35, 45, 85, 95};
-
-	for (int i = 0; i < 13; ++i)
-	{
-		int num = arr[i];
-		bst->insert(num);
-	}
-
-	// BST *bst2 = new BST(*bst);
-
-	// bst2->deleteKey(0);
-	// bst->printTree();
 
 	int c = 0;
 
@@ -682,8 +671,10 @@ int main()
 			break;
 
 		case 6:
-			cout << "Enter K1 and K2: ";
-			cin >> k1 >> k2;
+			cout << "Enter K1: ";
+			cin >> k1;
+			cout << "Enter K2: ";
+			cin >> k2;
 			list = bst->allElementsBetween(k1, k2);
 			cout << "Elements between " << k1 << " and " << k2 << ": ";
 			list->printList();

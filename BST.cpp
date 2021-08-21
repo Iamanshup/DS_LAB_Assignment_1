@@ -4,6 +4,7 @@
 #include "LinkedList.h"
 using namespace std;
 
+// class for BST node
 class Node
 {
 public:
@@ -12,6 +13,7 @@ public:
 	int val, sizeOfRightSubtree;
 
 public:
+	// constructor
 	Node(int val)
 	{
 		this->val = val;
@@ -21,6 +23,7 @@ public:
 	}
 };
 
+// class needed for PrintTree() function
 class DoubleTrees
 {
 public:
@@ -32,10 +35,13 @@ public:
 	}
 };
 
+// class for BST
 class BST
 {
 public:
 	Node *root;
+
+	void copyConstructorHelper(Node *node, BST *bst);
 	void deleteLeaf(Node *node, Node *par);
 	void deleteNodeWithOneChild(Node *node, Node *par);
 	void deleteNodeWithTwoChildren(Node *node, Node *par);
@@ -43,55 +49,34 @@ public:
 	int kthElementHelper(Node *node, int k);
 
 public:
-	void inorder()
-	{
-		if (!root)
-			return;
+	// void inorder()
+	// {
+	// 	if (!root)
+	// 		return;
 
-		Node *cur = root;
+	// 	Node *cur = root;
 
-		while (!cur->lthread && cur->left)
-			cur = cur->left;
+	// 	while (!cur->lthread && cur->left)
+	// 		cur = cur->left;
 
-		while (cur)
-		{
-			cout << cur->val << endl;
-			if (cur->rthread)
-				cur = cur->right;
-			else
-			{
-				cur = cur->right;
-				if (!cur)
-					break;
-				while (!cur->lthread && cur->left)
-					cur = cur->left;
-			}
-		}
-	}
+	// 	while (cur)
+	// 	{
+	// 		cout << cur->val << endl;
+	// 		if (cur->rthread)
+	// 			cur = cur->right;
+	// 		else
+	// 		{
+	// 			cur = cur->right;
+	// 			if (!cur)
+	// 				break;
+	// 			while (!cur->lthread && cur->left)
+	// 				cur = cur->left;
+	// 		}
+	// 	}
+	// }
 
-	BST()
-	{
-		root = NULL;
-	}
-
-	// copy constructor
-	BST(const BST *bst)
-	{
-		copyConstructorHelper(root, bst);
-	}
-
-	void copyConstructorHelper(Node *node, BST bst)
-	{
-		if (!node)
-			return;
-		bst.insert(node->val);
-
-		if (!node->lthread)
-			copyConstructorHelper(node->left, bst);
-
-		if (!node->rthread)
-			copyConstructorHelper(node->right, bst);
-	}
+	BST();
+	BST(BST *bst);
 
 	void insert(int x);
 	Node *search(int x);
@@ -107,29 +92,55 @@ public:
 	DoubleTrees *splitHelper(Node *node, int k);
 };
 
+// default constructor
+BST::BST()
+{
+	root = NULL;
+}
+
+// copy constructor
+BST::BST(BST *bst)
+{
+	bst = new BST();
+	copyConstructorHelper(this->root, bst);
+}
+
+void BST::copyConstructorHelper(Node *node, BST *bst)
+{
+	if (!node)
+		return;
+	bst->insert(node->val);
+
+	if (!node->lthread)
+		copyConstructorHelper(node->left, bst);
+
+	if (!node->rthread)
+		copyConstructorHelper(node->right, bst);
+}
+
+// insert function
 void BST::insert(int x)
 {
 	Node *cur = root;
 	Node *par = NULL;
 
+	// element s aleady present in tree
+	// throw an exception
 	if (search(x))
 	{
-		cout << "Duplicate Value!" << endl;
+		throw "Duplicate Value!";
 		return;
 	}
 
+	// find position where element is to be inserted
 	while (cur)
 	{
-		// if (x == cur->val)
-		// {
-		// 	cout << "Duplicate Value!" << endl;
-		// 	return;
-		// }
 
 		par = cur;
 
 		if (x < cur->val)
 		{
+			// go to left child if exists
 			if (!cur->lthread)
 				cur = cur->left;
 			else
@@ -137,7 +148,11 @@ void BST::insert(int x)
 		}
 		else
 		{
+			// element is inserted in right subtree
+			// increment size of right subtree
 			cur->sizeOfRightSubtree += 1;
+
+			// go to right child if exists
 			if (!cur->rthread)
 				cur = cur->right;
 			else
@@ -169,16 +184,20 @@ void BST::insert(int x)
 	}
 }
 
+// search element in bst
 Node *BST::search(int x)
 {
 	Node *cur = root;
 
 	while (cur)
 	{
+		// return if found
 		if (x == cur->val)
 			return cur;
+
 		else if (x < cur->val)
 		{
+			// go to left child if exists
 			if (!cur->lthread)
 				cur = cur->left;
 			else
@@ -186,24 +205,31 @@ Node *BST::search(int x)
 		}
 		else
 		{
+			// go to right child if exists
 			if (!cur->rthread)
 				cur = cur->right;
 			else
 				break;
 		}
 	}
+
+	// not found
 	return NULL;
 }
 
+// deletekey function
 void BST::deleteKey(int x)
 {
 	Node *cur = root, *par = NULL;
 
+	// if element to be deleted not present in
+	// the bst then throw an exception
 	if (!search(x))
 	{
 		throw "Key to be deleted is not present in the BST!";
 	}
 
+	// find the element to be deleted
 	while (cur)
 	{
 		if (x == cur->val)
@@ -217,6 +243,8 @@ void BST::deleteKey(int x)
 		}
 		else
 		{
+			// if deletion takes place from right subtree
+			// decrement size of right subtree
 			cur->sizeOfRightSubtree -= 1;
 			par = cur;
 			cur = cur->right;
@@ -256,7 +284,7 @@ void BST::deleteLeaf(Node *node, Node *par)
 		par->right = node->right;
 	}
 
-	// Free memory and return new root
+	// Free memory
 	delete (node);
 }
 
@@ -266,6 +294,8 @@ void BST::deleteNodeWithTwoChildren(Node *node, Node *par)
 	Node *parsucc = node;
 	Node *succ = node->right;
 
+	// decrement size of right subtree
+	// as successor node will be replaced
 	node->sizeOfRightSubtree -= 1;
 
 	// Find leftmost child of successor
@@ -321,19 +351,26 @@ void BST::deleteNodeWithOneChild(Node *node, Node *par)
 			s->left = p;
 	}
 
+	// free memory
 	delete (node);
 }
 
+// find successor of a node
 Node *BST::successor(Node *node)
 {
 	Node *cur = node;
+
+	// if right child does not exist
+	// return successor stored as right child
 	if (cur->rthread)
 		return cur->right;
 
+	// go to right child if exists
 	cur = cur->right;
 	if (!cur)
 		return cur;
 
+	// go to left most element
 	while (!cur->lthread && cur->left)
 		cur = cur->left;
 	return cur;
@@ -341,48 +378,53 @@ Node *BST::successor(Node *node)
 
 Node *BST::predecessor(Node *node)
 {
+	// if left child does not exist
+	// return successor stored as left child
 	Node *cur = node;
 	if (cur->lthread)
 		return cur->left;
 
+	// go to left child if exists
 	cur = cur->left;
 	if (!cur)
 		return cur;
 
+	// go to right most element
 	while (!cur->rthread && cur->right)
 		cur = cur->right;
 	return cur;
 }
 
+// return the reverse inorder
+// of bst in a linked list
 LinkedList *BST::reverseInorder()
 {
 	LinkedList *list = new LinkedList();
 	if (!root)
 		return list;
 	Node *cur = root;
+
+	// go to right most element
 	while (!cur->rthread && cur->right)
 		cur = cur->right;
 
 	while (cur)
 	{
+		// push current element to list
 		list->insert(cur->val);
-		if (cur->lthread)
-			cur = cur->left;
-		else
-		{
-			cur = cur->left;
-			if (!cur)
-				break;
-			while (!cur->rthread && cur->right)
-				cur = cur->right;
-		}
+		// go to te predecessor
+		cur = predecessor(cur);
 	}
 
+	// return the list
 	return list;
 }
 
+// function to return all elements between k1 and k2
+// in a lisnked list
 LinkedList *BST::allElementsBetween(int k1, int k2)
 {
+	// k1 should be less or equal to that k2
 	if (k1 > k2)
 		swap(k1, k2);
 	LinkedList *list = new LinkedList();
@@ -416,6 +458,7 @@ void BST::allElementsBetweenHelper(const Node *node, int k1, int k2, LinkedList 
 		allElementsBetweenHelper(node->right, k1, k2, list);
 }
 
+// print the kth lasgest element
 void BST::kthElement(int k)
 {
 	cout << "Kth (K = " << k << ") Largest Element is ";
@@ -431,19 +474,21 @@ int BST::kthElementHelper(Node *node, int k)
 
 	while (cur)
 	{
-		if (cur->sizeOfRightSubtree + 1 == k)
+		if (cur->sizeOfRightSubtree + 1 == k) // cur element is kth largest
 			return cur->val;
-		if (cur->sizeOfRightSubtree + 1 < k)
+
+		if (cur->sizeOfRightSubtree + 1 < k) // kth largest is in the left subtree
 		{
 			k -= (cur->sizeOfRightSubtree + 1);
 			cur = cur->left;
 		}
-		else
+		else // kth largest is in the right subtree
 			cur = cur->right;
 	}
 	return INT_MIN;
 }
 
+// function to print the bst
 void BST::printTree()
 {
 	ofstream fout;
@@ -461,12 +506,13 @@ void BST::printTreeHelper(const Node *node, ofstream &fout)
 	if (!node)
 		return;
 
-	if (node == root)
+	if (node == root) // add the label and root in the dot file
 	{
 		fout << "label = \" rooted at " << node->val << " \";\n";
 		fout << node->val << " [root = true]\n";
 	}
-	if (!node->lthread)
+
+	if (!node->lthread) // if left child exits
 	{
 		fout << node->val << " -> " << node->left->val << "\n";
 		printTreeHelper(node->left, fout);
@@ -477,7 +523,7 @@ void BST::printTreeHelper(const Node *node, ofstream &fout)
 			fout << node->val << " -> " << node->left->val << "[style = dotted];\n";
 	}
 
-	if (!node->rthread)
+	if (!node->rthread) // if right child exists
 	{
 		fout << node->val << " -> " << node->right->val << "\n";
 		printTreeHelper(node->right, fout);
@@ -491,11 +537,12 @@ void BST::printTreeHelper(const Node *node, ofstream &fout)
 
 void BST::split(int k)
 {
+	// find the two trees
 	DoubleTrees *dt = splitHelper(root, k);
 	// root = dt->left;
 
+	// print the inorder of first tree
 	Node *cur = dt->left;
-
 	cout << "InOrder of T1: ";
 	if (cur)
 	{
@@ -510,8 +557,8 @@ void BST::split(int k)
 	}
 	cout << endl;
 
+	// print the inorder of second tree
 	cur = dt->right;
-
 	cout << "InOrder of T2: ";
 	if (cur)
 	{
@@ -525,13 +572,9 @@ void BST::split(int k)
 		}
 	}
 	cout << endl;
-	// if (dt->left)
-	// 	cout << dt->left->val << "L\n";
-
-	// if (dt->right)
-	// 	cout << dt->right->val << "R\n";
 }
 
+// split a bst in two parts T1 and T2
 DoubleTrees *BST::splitHelper(Node *node, int k)
 {
 	DoubleTrees *dt = new DoubleTrees();
@@ -540,6 +583,8 @@ DoubleTrees *BST::splitHelper(Node *node, int k)
 	if (!node)
 		return dt;
 
+	// if node->val <= k all elements in left subtree including root
+	// will be in T1 therefore, recurse for the right subtree
 	if (node->val <= k)
 	{
 		dt->left = node;
@@ -556,6 +601,9 @@ DoubleTrees *BST::splitHelper(Node *node, int k)
 			dt->right = dt1->right;
 		}
 	}
+
+	// if node->val > k all elements in right subtree including root
+	// will be in T2 therefore, recurse for the left subtree
 	else
 	{
 		dt->right = node;
@@ -580,14 +628,101 @@ int main()
 	BST *bst = new BST();
 	int arr[] = {50, 30, 100, 5, 40, 90, 105, 0, 10, 35, 45, 85, 95};
 
-	for (int num : arr)
+	int c = 0;
+
+	while (c != -1)
 	{
-		bst->insert(num);
+		LinkedList *list;
+		int k, k1, k2, num;
+		cout << "1. Insert(x)\n2. Search(x)\n3. Delete(x)\n4. ReverseInorder\n5. Split(k)\n6. AllElementsBetween(k1, k2)\n7. KhElement\n8. Print Tree\n9. Exit\n";
+		cin >> c;
+		switch (c)
+		{
+		case 1:
+			cout << "Enter a number: ";
+			cin >> num;
+			try
+			{
+				bst->insert(num);
+			}
+			catch (string e)
+			{
+				cout << e << "\n";
+			}
+			break;
+
+		case 2:
+			cout << "Enter a number: ";
+			cin >> num;
+			if (bst->search(num))
+				cout << "Number is present in BST.";
+			else
+				cout << "Number is not present in BST.";
+			break;
+
+		case 3:
+			cout << "Enter a number: ";
+			cin >> num;
+			try
+			{
+				bst->deleteKey(num);
+			}
+			catch (string e)
+			{
+				cout << e << "\n";
+			}
+			break;
+
+		case 4:
+			list = bst->reverseInorder();
+			list->printList();
+			break;
+
+		case 5:
+			cout << "Enter a number: ";
+			cin >> k;
+			// BST *newBST = bst;
+			bst->split(k);
+			break;
+
+		case 6:
+			cout << "Enter K1 and K2: ";
+			cin >> k1 >> k2;
+			list = bst->allElementsBetween(k1, k2);
+			list->printList();
+			break;
+
+		case 7:
+			cout << "Enter a number: ";
+			cin >> k;
+			bst->kthElement(k);
+			break;
+
+		case 8:
+			bst->printTree();
+			break;
+
+		case 9:
+			c = -1;
+			break;
+
+		default:
+			cout << "Invalid Choice!\n Try again.";
+			break;
+		}
 	}
 
-	bst->printTree();
+	// for (int num : arr)
+	// {
+	// 	bst->insert(num);
+	// }
 
-	bst->split(11);
+	// BST bst2 = bst;
+
+	// bst2.deleteKey(50);
+	// bst->printTree();
+
+	// bst->split(11);
 
 	// bst->printTree();
 

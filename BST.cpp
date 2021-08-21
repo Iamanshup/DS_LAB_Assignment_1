@@ -41,7 +41,7 @@ class BST
 public:
 	Node *root;
 
-	void copyConstructorHelper(Node *node, BST *bst);
+	void copyConstructorHelper(const Node *node);
 	void deleteLeaf(Node *node, Node *par);
 	void deleteNodeWithOneChild(Node *node, Node *par);
 	void deleteNodeWithTwoChildren(Node *node, Node *par);
@@ -49,34 +49,8 @@ public:
 	int kthElementHelper(Node *node, int k);
 
 public:
-	// void inorder()
-	// {
-	// 	if (!root)
-	// 		return;
-
-	// 	Node *cur = root;
-
-	// 	while (!cur->lthread && cur->left)
-	// 		cur = cur->left;
-
-	// 	while (cur)
-	// 	{
-	// 		cout << cur->val << endl;
-	// 		if (cur->rthread)
-	// 			cur = cur->right;
-	// 		else
-	// 		{
-	// 			cur = cur->right;
-	// 			if (!cur)
-	// 				break;
-	// 			while (!cur->lthread && cur->left)
-	// 				cur = cur->left;
-	// 		}
-	// 	}
-	// }
-
 	BST();
-	BST(BST *bst);
+	BST(BST &bst);
 
 	void insert(int x);
 	Node *search(int x);
@@ -99,23 +73,24 @@ BST::BST()
 }
 
 // copy constructor
-BST::BST(BST *bst)
+BST::BST(BST &bst)
 {
-	bst = new BST();
-	copyConstructorHelper(this->root, bst);
+	// Node *node = bst->root;
+	if (bst.root)
+		copyConstructorHelper(bst.root);
 }
 
-void BST::copyConstructorHelper(Node *node, BST *bst)
+void BST::copyConstructorHelper(const Node *node)
 {
 	if (!node)
 		return;
-	bst->insert(node->val);
+	insert(node->val);
 
 	if (!node->lthread)
-		copyConstructorHelper(node->left, bst);
+		copyConstructorHelper(node->left);
 
 	if (!node->rthread)
-		copyConstructorHelper(node->right, bst);
+		copyConstructorHelper(node->right);
 }
 
 // insert function
@@ -128,8 +103,7 @@ void BST::insert(int x)
 	// throw an exception
 	if (search(x))
 	{
-		throw "Duplicate Value!";
-		return;
+		throw -1;
 	}
 
 	// find position where element is to be inserted
@@ -226,7 +200,7 @@ void BST::deleteKey(int x)
 	// the bst then throw an exception
 	if (!search(x))
 	{
-		throw "Key to be deleted is not present in the BST!";
+		throw -1;
 	}
 
 	// find the element to be deleted
@@ -628,11 +602,23 @@ int main()
 	BST *bst = new BST();
 	int arr[] = {50, 30, 100, 5, 40, 90, 105, 0, 10, 35, 45, 85, 95};
 
+	for (int i = 0; i < 13; ++i)
+	{
+		int num = arr[i];
+		bst->insert(num);
+	}
+
+	// BST *bst2 = new BST(*bst);
+
+	// bst2->deleteKey(0);
+	// bst->printTree();
+
 	int c = 0;
 
 	while (c != -1)
 	{
 		LinkedList *list;
+		BST *bst2;
 		int k, k1, k2, num;
 		cout << "1. Insert(x)\n2. Search(x)\n3. Delete(x)\n4. ReverseInorder\n5. Split(k)\n6. AllElementsBetween(k1, k2)\n7. KhElement\n8. Print Tree\n9. Exit\n";
 		cin >> c;
@@ -645,9 +631,12 @@ int main()
 			{
 				bst->insert(num);
 			}
-			catch (string e)
+			catch (int e)
 			{
-				cout << e << "\n";
+				if (e == -1)
+					cout << "Duplicate Key\n";
+				else
+					cout << "Some error occurred!\n";
 			}
 			break;
 
@@ -655,9 +644,9 @@ int main()
 			cout << "Enter a number: ";
 			cin >> num;
 			if (bst->search(num))
-				cout << "Number is present in BST.";
+				cout << "Number is present in BST.\n";
 			else
-				cout << "Number is not present in BST.";
+				cout << "Number is not present in BST.\n";
 			break;
 
 		case 3:
@@ -667,28 +656,33 @@ int main()
 			{
 				bst->deleteKey(num);
 			}
-			catch (string e)
+			catch (int e)
 			{
-				cout << e << "\n";
+				if (e == -1)
+					cout << "Key does not exixt in the BST!\n";
+				else
+					cout << "Some error occurred!\n";
 			}
 			break;
 
 		case 4:
 			list = bst->reverseInorder();
+			cout << "Reverse Inorder: ";
 			list->printList();
 			break;
 
 		case 5:
 			cout << "Enter a number: ";
 			cin >> k;
-			// BST *newBST = bst;
-			bst->split(k);
+			bst2 = new BST(*bst);
+			bst2->split(k);
 			break;
 
 		case 6:
 			cout << "Enter K1 and K2: ";
 			cin >> k1 >> k2;
 			list = bst->allElementsBetween(k1, k2);
+			cout << "Elements between " << k1 << " and " << k2 << ": ";
 			list->printList();
 			break;
 
@@ -707,30 +701,8 @@ int main()
 			break;
 
 		default:
-			cout << "Invalid Choice!\n Try again.";
+			cout << "Invalid Choice!\n Try again.\n";
 			break;
 		}
 	}
-
-	// for (int num : arr)
-	// {
-	// 	bst->insert(num);
-	// }
-
-	// BST bst2 = bst;
-
-	// bst2.deleteKey(50);
-	// bst->printTree();
-
-	// bst->split(11);
-
-	// bst->printTree();
-
-	// for (int i = 0; i < 13; ++i)
-	// {
-	// 	bst->kthElement(i + 1);
-	// }
-
-	// LinkedList *list = bst->allElementsBetween(1, 100);
-	// list->printList();
 }

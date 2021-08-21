@@ -552,7 +552,6 @@ void BST::split(int k)
 DoubleTrees *BST::splitHelper(Node *node, int k)
 {
 	DoubleTrees *dt = new DoubleTrees();
-	;
 
 	if (!node)
 		return dt;
@@ -620,7 +619,9 @@ int main()
 		LinkedList *list;
 		BST *bst2;
 		int k, k1, k2, num;
+		cout << "MENU:\n";
 		cout << "1. Insert(x)\n2. Search(x)\n3. Delete(x)\n4. ReverseInorder\n5. Split(k)\n6. AllElementsBetween(k1, k2)\n7. KhElement\n8. Print Tree\n9. Exit\n";
+		cout << "Enter your choice: ";
 		cin >> c;
 		switch (c)
 		{
@@ -630,6 +631,7 @@ int main()
 			try
 			{
 				bst->insert(num);
+				cout << "Key inserted successfuly!\n";
 			}
 			catch (int e)
 			{
@@ -655,6 +657,7 @@ int main()
 			try
 			{
 				bst->deleteKey(num);
+				cout << "Key deleted successfuly!\n";
 			}
 			catch (int e)
 			{
@@ -693,7 +696,16 @@ int main()
 			break;
 
 		case 8:
-			bst->printTree();
+			try
+			{
+				bst->printTree();
+				cout << "Tree Printed Successfully! Please check the BST.png file.\n";
+			}
+			catch (...)
+			{
+				cout << "Some error occurred!\n";
+			}
+
 			break;
 
 		case 9:
@@ -704,5 +716,6 @@ int main()
 			cout << "Invalid Choice!\n Try again.\n";
 			break;
 		}
+		cout << "\n\n";
 	}
 }
